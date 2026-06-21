@@ -17,6 +17,7 @@ import UserRegister from "./pages/UserRegister";
 import MyOrderPage from "./pages/MyOrderPage";
 import Payment from "./pages/Payment";
 import { PersistGate } from "redux-persist/integration/react";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -32,31 +33,27 @@ function App() {
 
 function AppRouter() {
   const location = useLocation();
-  const isAuthPage =
-    location.pathname === "/login" ||
-    location.pathname === "/register";
-  const { loginSuccess } = store.getState().users;
 
+  const { loginSuccess } = store.getState().users;
+  const protectedRoutes = ["/", "/cart", "my_orders"];
+  const showLayout = location.pathname.includes(protectedRoutes);
   return (
     <>
-      {!isAuthPage && <NavComponent />}
+      {showLayout && <NavComponent />}
       <Routes>
         <Route path="/payment" element={<Payment />} />
         <Route
           path="/"
-          element={
-            loginSuccess ? <HomePage /> : <Navigate to="/login" />
-          }
+          element={loginSuccess ? <HomePage /> : <Navigate to="/login" />}
         />
         <Route
           path="/cart"
-          element={
-            loginSuccess ? <CartPage /> : <Navigate to="/login" />
-          }
+          element={loginSuccess ? <CartPage /> : <Navigate to="/login" />}
         />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/register" element={<UserRegister />} />
         <Route path="/my_orders" element={<MyOrderPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
